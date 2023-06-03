@@ -17,6 +17,14 @@ If you want to add more platforms, please feel free to open an issue or PR.
 
 For syncing memos in obsidian, you can use [obsidian-memos-plugin](https://github.com/hyoban/obsidian-memos-plugin)
 
+## Usage
+
+To run this app on macOS, open the terminal and run the following command:
+
+```sh
+xattr -cr /Applications/Kirika.app/
+```
+
 ## Star History
 
 <a href="https://star-history.com/#hyoban/kirika&Date">
