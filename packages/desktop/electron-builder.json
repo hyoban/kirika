@@ -1,0 +1,39 @@
+{
+	"$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
+	"appId": "cc.hyoban.kirika",
+	"productName": "Kirika",
+	"asar": true,
+	"directories": {
+		"output": "release"
+	},
+	"files": ["dist-electron", "dist"],
+	"linux": {
+		"icon": "public/icon.png",
+		"executableName": "desiredName",
+		"artifactName": "${productName}-${version}.${ext}"
+	},
+	"mac": {
+		"artifactName": "${productName}_${version}_${arch}.${ext}",
+		"icon": "public/icon.icns",
+		"target": {
+			"target": "dmg",
+			"arch": ["x64", "arm64"]
+		}
+	},
+	"win": {
+		"icon": "public/icon.ico",
+		"target": [
+			{
+				"target": "nsis",
+				"arch": ["x64"]
+			}
+		],
+		"artifactName": "${productName}_${version}.${ext}"
+	},
+	"nsis": {
+		"oneClick": false,
+		"perMachine": false,
+		"allowToChangeInstallationDirectory": true,
+		"deleteAppDataOnUninstall": false
+	}
+}
