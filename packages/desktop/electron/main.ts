@@ -95,7 +95,8 @@ async function convert(options: ConvertOptions) {
 
 function createWindow() {
 	win = new BrowserWindow({
-		icon: path.join(process.env.PUBLIC, "electron-vite.svg"),
+		width: 10000000,
+		height: 10000000,
 		webPreferences: {
 			preload: path.join(__dirname, "preload.js"),
 		},

@@ -67,3 +67,7 @@
 html.dark {
 	color-scheme: dark;
 }
+
+html::-webkit-scrollbar {
+	display: none;
+}
