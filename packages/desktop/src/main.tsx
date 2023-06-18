@@ -15,7 +15,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 		<>
 			{/* remove this if you are not using Electron */}
 			<TitleBar />
-			<div className="p-14">
+			<div className="p-20">
 				<App />
 			</div>
 			<footer className="flex gap-4 justify-center pb-6">

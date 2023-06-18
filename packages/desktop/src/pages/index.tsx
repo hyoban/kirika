@@ -39,18 +39,6 @@ const options = [
 			},
 		],
 	},
-	{
-		title: "SYNC",
-		items: [
-			{
-				path: "/memos-to-notion",
-				from: "Memos",
-				to: "Notion",
-				description: "Sync your memos to Notion Database.",
-				ingredients: ["OpenAPI", "Notion Token", "Notion Database ID"],
-			},
-		],
-	},
 ]
 
 type OptionGroup = (typeof options)[number]
@@ -103,7 +91,7 @@ Selection.Item = function SelectionItem({
 
 export default function Home() {
 	return (
-		<div className="flex flex-col gap-4 items-center justify-center">
+		<div className="flex flex-col gap-10 items-center justify-center">
 			{options.map((option, index) => (
 				<Selection key={index} title={option.title}>
 					{option.items.map((item, index) => (
