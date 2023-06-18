@@ -9,13 +9,12 @@ import {
 	FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useDark } from "@/hooks"
 import { cn } from "@/lib/utils"
 import { OPEN_API_SCHEMA } from "@/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRef, useState } from "react"
 import { useForm } from "react-hook-form"
-import { Toaster, toast } from "sonner"
+import { toast } from "sonner"
 import * as z from "zod"
 
 const formSchema = z.object({
@@ -32,7 +31,6 @@ export default function GoogleKeepToMemosForm({
 }) {
 	const uploadRef = useRef<HTMLInputElement>(null)
 	const [isConverting, setIsConverting] = useState(false)
-	const [isDark] = useDark()
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -130,7 +128,6 @@ export default function GoogleKeepToMemosForm({
 					Convert
 				</Button>
 			</form>
-			<Toaster closeButton theme={isDark ? "dark" : "light"} />
 		</Form>
 	)
 }
