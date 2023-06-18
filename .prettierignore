@@ -1,4 +1,4 @@
 .next
 pnpm-lock.yaml
 dist
-
+dist-electron
