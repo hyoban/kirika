@@ -89,7 +89,7 @@ export async function readMemosFromOpenAPI(
 	const files: Attachment[] = await Promise.all(
 		filetedResources.map(async (resource) => {
 			const memoResourceUrl =
-				getResourceUrl(resource, url) + "?openid=" + openId
+				getResourceUrl(resource, url) + "?openId=" + openId
 			const response = await axios(memoResourceUrl, {
 				responseType: "arraybuffer",
 			})
