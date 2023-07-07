@@ -2,12 +2,8 @@
 
 Currently it supports:
 
-- Local -> Memos
-  - import your markdown files to memos
 - Memos -> Local
   - export all your notes, including resource files
-- Memos -> Notion
-  - sync your memos to Notion
 - Google Keep -> Memos
   - import your notes from Google Keep to Memos
 
