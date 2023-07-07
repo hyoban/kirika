@@ -16,3 +16,7 @@ export function getNoteContent(note: Note): string {
 			: "")
 	)
 }
+
+export function getValidFileName(filename: string): string {
+	return filename.replace(/[/\\?%*:|"<>]/g, "-")
+}

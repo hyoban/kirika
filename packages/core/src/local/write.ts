@@ -2,7 +2,7 @@ import fs from "fs"
 import JSZip from "jszip"
 import path from "path"
 import { NotesWithAttachments } from "../common/types"
-import { getNoteContent } from "../utils"
+import { getNoteContent, getValidFileName } from "../utils"
 
 export async function writeNotesAsZipFile(
 	notesWithResource: NotesWithAttachments
@@ -39,8 +39,13 @@ export async function writeNotesToPath(
 	await fs.promises.mkdir(resourceFolder)
 	notesWithResource.files.forEach(async (resource) => {
 		await fs.promises.writeFile(
-			path.join(resourceFolder, resource.filename),
+			path.join(resourceFolder, getValidFileName(resource.filename)),
 			Buffer.from(resource.content)
 		)
 	})
 }
+
+// const memos = await readMemosFromOpenAPI(
+// 	"https://yiyao.cf/api/memo?openId=3ba1f89a-8445-42ec-879c-8e9b4a56f867"
+// )
+// await writeNotesToPath(memos, "/Users/hyoban/Downloads")

@@ -1,3 +1,4 @@
+import fetch from "node-fetch"
 import { Attachment, NotesWithAttachments } from "../common/types"
 
 interface CreateBlobAPIResponse {

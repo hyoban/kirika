@@ -1,4 +1,4 @@
-import axios from "axios"
+import fetch from "node-fetch"
 import { Attachment, Note, NotesWithAttachments } from "../common/types"
 
 type MemoAPIResponse =
@@ -73,8 +73,8 @@ export async function readMemosFromOpenAPI(
 		throw new Error("openId is not found")
 	}
 
-	const response = (await axios(openAPI).then(
-		(res) => res.data
+	const response = (await fetch(openAPI).then((res) =>
+		res.json()
 	)) as MemoAPIResponse
 	const memos = Array.isArray(response) ? response : response.data
 
@@ -90,10 +90,8 @@ export async function readMemosFromOpenAPI(
 		filetedResources.map(async (resource) => {
 			const memoResourceUrl =
 				getResourceUrl(resource, url) + "?openId=" + openId
-			const response = await axios(memoResourceUrl, {
-				responseType: "arraybuffer",
-			})
-			const content = Buffer.from(response.data)
+			const response = await fetch(memoResourceUrl)
+			const content = await response.arrayBuffer()
 			return {
 				filename: resource.filename,
 				mimetype: resource.type,
