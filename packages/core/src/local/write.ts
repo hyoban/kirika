@@ -1,7 +1,8 @@
 import fs from "fs"
 import JSZip from "jszip"
 import path from "path"
-import { Note, NotesWithAttachments } from "../common/types"
+import { NotesWithAttachments } from "../common/types"
+import { getNoteContent } from "../utils"
 
 export async function writeNotesAsZipFile(
 	notesWithResource: NotesWithAttachments
@@ -42,21 +43,4 @@ export async function writeNotesToPath(
 			Buffer.from(resource.content)
 		)
 	})
-}
-
-function getNoteContent(note: Note): string {
-	return (
-		note.content +
-		"\n" +
-		(typeof note.attachments[0] !== "string"
-			? note.attachments
-					.map((attachment) => {
-						if (typeof attachment !== "string") {
-							return attachment.markdown
-						}
-					})
-					.join("\n")
-					.trim()
-			: "")
-	)
 }
