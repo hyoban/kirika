@@ -1,8 +1,7 @@
+import axios from "axios"
 import { Attachment, Note, NotesWithAttachments } from "../common/types"
 
-type MemoAPIResponse = {
-	data: Memo[]
-}
+type MemoAPIResponse = Memo[]
 
 type Memo = {
 	id: number
@@ -66,11 +65,11 @@ export async function readMemosFromOpenAPI(
 ): Promise<NotesWithAttachments> {
 	const url = new URL(openAPI)
 
-	const memos = (await fetch(openAPI).then((res) =>
-		res.json()
+	const memos = (await axios(openAPI).then(
+		(res) => res.data
 	)) as MemoAPIResponse
 
-	const resources = memos.data.map((memo) => memo.resourceList).flat()
+	const resources = memos.map((memo) => memo.resourceList).flat()
 	const filetedResources = resources.filter((resource, index) => {
 		const firstIndex = resources.findIndex(
 			(r) => r.publicId === resource.publicId
@@ -81,15 +80,19 @@ export async function readMemosFromOpenAPI(
 	const files: Attachment[] = await Promise.all(
 		filetedResources.map(async (resource) => {
 			const memoResourceUrl = getResourceUrl(resource, url)
+			const response = await axios(memoResourceUrl, {
+				responseType: "arraybuffer",
+			})
+			const content = Buffer.from(response.data)
 			return {
 				filename: resource.filename,
-				content: await fetch(memoResourceUrl).then((res) => res.arrayBuffer()),
 				mimetype: resource.type,
+				content,
 			}
 		})
 	)
 
-	const notes: Note[] = memos.data.map((memo) => ({
+	const notes: Note[] = memos.map((memo) => ({
 		id: String(memo.id),
 		title: memo.content.split("\n")[0].slice(0, 20) + "...",
 		attachments: memo.resourceList.map((resource) =>

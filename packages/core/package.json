@@ -1,6 +1,6 @@
 {
 	"name": "kirika",
-	"version": "0.3.1",
+	"version": "0.4.0",
 	"description": "Convert your notes between different formats",
 	"repository": "hyoban/kirika",
 	"license": "MIT",
@@ -30,6 +30,7 @@
 	"dependencies": {
 		"@notionhq/client": "^2.2.5",
 		"@tryfabric/martian": "^1.2.4",
+		"axios": "^1.4.0",
 		"jszip": "^3.10.1"
 	}
 }
