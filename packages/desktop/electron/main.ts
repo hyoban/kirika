@@ -1,11 +1,16 @@
 import { BrowserWindow, app, ipcMain, shell } from "electron"
-import { promises as fs } from "fs"
-import { readGoogleKeepTakeout, writeMemosWithResources } from "kirika"
+import fs from "fs"
+import {
+	readGoogleKeepTakeout,
+	readMemosFromOpenAPI,
+	writeMemosWithResources,
+	writeNotesToPath,
+} from "kirika"
 import path from "node:path"
 
 export interface ConvertOptions {
-	from: "google-keep"
-	to: "memos"
+	from: "google-keep" | "memos"
+	to: "memos" | "local"
 	localFilePath?: string
 	openAPI?: string
 }
@@ -62,41 +67,71 @@ async function convert(options: ConvertOptions) {
 	const { from, to, openAPI, localFilePath } = options
 
 	if (from === "google-keep" && to === "memos") {
-		if (localFilePath && openAPI) {
-			try {
-				const zip = await fs.readFile(localFilePath)
-				sendInfo(`Read file ${localFilePath.split("/").pop() ?? ""} success`)
-
-				try {
-					const memosWithResource = await readGoogleKeepTakeout(zip)
-					sendInfo(
-						`Read Google Keep Takeout success: ${memosWithResource.notes.length} notes, ${memosWithResource.files.length} files`
-					)
-
-					const res = await writeMemosWithResources(openAPI, memosWithResource)
-					if (typeof res === "string") {
-						sendError(res)
-					} else {
-						sendSuccess(`Write notes and files to Memos successfully`)
-					}
-				} catch (error) {
-					sendError(`Read Google Keep Takeout failed: ${String(error)}`)
-				}
-			} catch (error) {
-				sendError(`Read file ${localFilePath} failed: ${String(error)}`)
-			}
-		} else {
-			sendError("Convert options is invalid, please check it")
-		}
+		await convertFromGoogleKeepToMemos(localFilePath, openAPI)
+	} else if (from === "memos" && to === "local") {
+		await convertFromMemosToLocal(openAPI)
 	} else {
 		sendError("Convert type is not supported")
 	}
 }
 
+async function convertFromMemosToLocal(openAPI?: string | undefined) {
+	if (openAPI) {
+		try {
+			const memos = await readMemosFromOpenAPI(openAPI)
+			try {
+				const targetPath = path.resolve(app.getPath("downloads"), "kirika")
+				if (!fs.existsSync(targetPath)) {
+					fs.mkdirSync(targetPath)
+				}
+				await writeNotesToPath(memos, targetPath)
+				sendSuccess(`Write Memos success: ${targetPath}`)
+			} catch (error) {
+				sendError(`Write Memos failed: ${String(error)}`)
+			}
+		} catch (error) {
+			sendError(`Read Memos failed: ${String(error)}`)
+		}
+	} else {
+		sendError("Convert options is invalid, please check it")
+	}
+}
+
+async function convertFromGoogleKeepToMemos(
+	localFilePath?: string | undefined,
+	openAPI?: string | undefined
+) {
+	if (localFilePath && openAPI) {
+		try {
+			const zip = await fs.promises.readFile(localFilePath)
+			sendInfo(`Read file ${localFilePath.split("/").pop() ?? ""} success`)
+
+			try {
+				const memosWithResource = await readGoogleKeepTakeout(zip)
+				sendInfo(
+					`Read Google Keep Takeout success: ${memosWithResource.notes.length} notes, ${memosWithResource.files.length} files`
+				)
+				const res = await writeMemosWithResources(openAPI, memosWithResource)
+				if (typeof res === "string") {
+					sendError(res)
+				} else {
+					sendSuccess(`Write notes and files to Memos successfully`)
+				}
+			} catch (error) {
+				sendError(`Read Google Keep Takeout failed: ${String(error)}`)
+			}
+		} catch (error) {
+			sendError(`Read file ${localFilePath} failed: ${String(error)}`)
+		}
+	} else {
+		sendError("Convert options is invalid, please check it")
+	}
+}
+
 function createWindow() {
 	win = new BrowserWindow({
-		width: 10000000,
-		height: 10000000,
+		height: 800,
+		width: 1000,
 		webPreferences: {
 			preload: path.join(__dirname, "preload.js"),
 		},
