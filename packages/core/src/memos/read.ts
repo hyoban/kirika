@@ -68,6 +68,10 @@ export async function readMemosFromOpenAPI(
 	withOutResources = false
 ): Promise<NotesWithAttachments> {
 	const url = new URL(openAPI)
+	const openId = url.searchParams.get("openid")
+	if (!openId) {
+		throw new Error("openId is not found")
+	}
 
 	const response = (await axios(openAPI).then(
 		(res) => res.data
@@ -84,7 +88,8 @@ export async function readMemosFromOpenAPI(
 
 	const files: Attachment[] = await Promise.all(
 		filetedResources.map(async (resource) => {
-			const memoResourceUrl = getResourceUrl(resource, url)
+			const memoResourceUrl =
+				getResourceUrl(resource, url) + "?openid=" + openId
 			const response = await axios(memoResourceUrl, {
 				responseType: "arraybuffer",
 			})
