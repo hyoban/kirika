@@ -1,7 +1,11 @@
 import axios from "axios"
 import { Attachment, Note, NotesWithAttachments } from "../common/types"
 
-type MemoAPIResponse = Memo[]
+type MemoAPIResponse =
+	| Memo[]
+	| {
+			data: Memo[]
+	  }
 
 type Memo = {
 	id: number
@@ -65,9 +69,10 @@ export async function readMemosFromOpenAPI(
 ): Promise<NotesWithAttachments> {
 	const url = new URL(openAPI)
 
-	const memos = (await axios(openAPI).then(
+	const response = (await axios(openAPI).then(
 		(res) => res.data
 	)) as MemoAPIResponse
+	const memos = Array.isArray(response) ? response : response.data
 
 	const resources = memos.map((memo) => memo.resourceList).flat()
 	const filetedResources = resources.filter((resource, index) => {
