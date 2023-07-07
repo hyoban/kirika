@@ -68,7 +68,7 @@ export async function readMemosFromOpenAPI(
 	withOutResources = false
 ): Promise<NotesWithAttachments> {
 	const url = new URL(openAPI)
-	const openId = url.searchParams.get("openid")
+	const openId = url.searchParams.get("openId")
 	if (!openId) {
 		throw new Error("openId is not found")
 	}
