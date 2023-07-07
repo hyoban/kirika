@@ -1,7 +1,7 @@
 {
 	"name": "@kirika/desktop",
 	"description": "A simple tool to convert your notes between different platforms",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"author": {
 		"email": "hi@hyoban.cc",
 		"name": "hyoban",
