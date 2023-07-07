@@ -15,7 +15,7 @@ const options = [
 				path: "/memos-to-local",
 				from: "Memos",
 				to: "Local",
-				description: "Download your memos and resources as a zip file.",
+				description: "Export your memos and resources.",
 				ingredients: ["OpenAPI"],
 			},
 		],
@@ -29,13 +29,6 @@ const options = [
 				to: "Memos",
 				description: "Import your Google Keep notes to Memos.",
 				ingredients: ["Google Keep Takeout", "OpenAPI"],
-			},
-			{
-				path: "/local-to-memos",
-				from: "Local",
-				to: "Memos",
-				description: "Import your local markdown files to Memos.",
-				ingredients: ["Zip file with markdown files", "OpenAPI"],
 			},
 		],
 	},
@@ -91,7 +84,7 @@ Selection.Item = function SelectionItem({
 
 export default function Home() {
 	return (
-		<div className="flex flex-col gap-10 items-center justify-center">
+		<div className="flex flex-col gap-10 items-stretch justify-center">
 			{options.map((option, index) => (
 				<Selection key={index} title={option.title}>
 					{option.items.map((item, index) => (
