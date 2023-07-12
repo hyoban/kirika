@@ -1,4 +1,5 @@
-import { Note } from "../common/types"
+import fetch from "node-fetch"
+import { Attachment, Note } from "../common/types"
 
 export function getNoteContent(note: Note): string {
 	return (
@@ -15,6 +16,17 @@ export function getNoteContent(note: Note): string {
 					.trim()
 			: "")
 	)
+}
+
+export async function getAttachmentContent(resource: Attachment) {
+	if (resource.content) {
+		return resource.content
+	}
+	if (resource.url) {
+		const response = await fetch(resource.url)
+		return await response.arrayBuffer()
+	}
+	return null
 }
 
 export function getValidFileName(filename: string): string {
