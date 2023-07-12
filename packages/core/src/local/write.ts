@@ -23,8 +23,14 @@ export async function writeNotesToPath(
 	const resourceFolder = path.join(topFolder, "resources")
 	await fs.promises.mkdir(resourceFolder)
 	notesWithResource.files.forEach(async (resource) => {
-		const content = await fetch(resource.url)
-		resource.content = await content.arrayBuffer()
+		if (!resource.content) {
+			if (resource.url) {
+				const content = await fetch(resource.url)
+				resource.content = await content.arrayBuffer()
+			} else {
+				return
+			}
+		}
 
 		await fs.promises.writeFile(
 			path.join(resourceFolder, getValidFileName(resource.filename)),

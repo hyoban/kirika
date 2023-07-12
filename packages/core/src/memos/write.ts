@@ -47,6 +47,14 @@ async function writeResource(
 	const createBlobURL = baseURL + "/api/resource/blob" + "?openId=" + openId
 
 	const postData = new FormData()
+	if (!attachment.content) {
+		if (attachment.url) {
+			const response = await fetch(attachment.url)
+			attachment.content = await response.arrayBuffer()
+		} else {
+			return `Failed to create resource ${attachment.filename}`
+		}
+	}
 	postData.append(
 		"file",
 		new Blob([attachment.content], {
