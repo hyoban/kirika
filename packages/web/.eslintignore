@@ -1,6 +1,0 @@
-dist/*
-.cache
-public
-node_modules
-*.cjs
-*.js
