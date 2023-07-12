@@ -1,6 +1,7 @@
 export type Attachment = {
 	filename: string
-	content: ArrayBuffer
+	url: string
+	content?: ArrayBuffer
 	mimetype?: string
 }
 

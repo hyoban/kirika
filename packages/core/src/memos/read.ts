@@ -90,12 +90,11 @@ export async function readMemosFromOpenAPI(
 		filetedResources.map(async (resource) => {
 			const memoResourceUrl =
 				getResourceUrl(resource, url) + "?openId=" + openId
-			const response = await fetch(memoResourceUrl)
-			const content = await response.arrayBuffer()
+
 			return {
 				filename: resource.filename,
 				mimetype: resource.type,
-				content,
+				url: memoResourceUrl,
 			}
 		})
 	)
