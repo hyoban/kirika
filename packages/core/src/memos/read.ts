@@ -101,7 +101,7 @@ export async function readMemosFromOpenAPI(
 
 	const notes: Note[] = memos.map((memo) => ({
 		id: String(memo.id),
-		title: memo.content.split("\n")[0].slice(0, 20) + "...",
+		title: sliceString(memo.content.split("\n")[0], 20),
 		attachments: memo.resourceList.map((resource) =>
 			withOutResources
 				? {
@@ -137,4 +137,8 @@ ${memo.content}
 		notes,
 		files: withOutResources ? [] : files,
 	}
+}
+
+function sliceString(str: string, length: number, ellipsis = "...") {
+	return str.length > length ? str.slice(0, length) + ellipsis : str
 }
