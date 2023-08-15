@@ -116,6 +116,7 @@ export async function readMemosFromOpenAPI(
 		metadata: {
 			createdAt: memo.createdTs * 1000,
 			updatedAt: memo.updatedTs * 1000,
+			isArchived: memo.rowStatus === "ARCHIVED",
 		},
 		content:
 			`

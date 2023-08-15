@@ -8,6 +8,7 @@ export type Attachment = {
 export type Metadata = {
 	createdAt?: number
 	updatedAt?: number
+	isArchived?: boolean
 } & Record<string, unknown>
 
 export type Note = {
