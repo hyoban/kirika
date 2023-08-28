@@ -80,16 +80,15 @@ export async function readMemosFromOpenAPI(
 
 	const resources = memos.map((memo) => memo.resourceList).flat()
 	const filetedResources = resources.filter((resource, index) => {
-		const firstIndex = resources.findIndex(
-			(r) => r.publicId === resource.publicId
-		)
+		const firstIndex = resources.findIndex((r) => r.id === resource.id)
 		return index === firstIndex
 	})
 
 	const files: Attachment[] = await Promise.all(
 		filetedResources.map(async (resource) => {
-			const memoResourceUrl =
-				getResourceUrl(resource, url) + "?openId=" + openId
+			const memoResourceUrl = `${getResourceUrl(resource, url)}${
+				resource.externalLink ? "" : `?openId=${openId}`
+			}`
 
 			return {
 				filename: resource.filename,
