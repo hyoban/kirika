@@ -1,5 +1,6 @@
 import fetch from "node-fetch"
 import { Attachment, NotesWithAttachments } from "../common/types"
+import { Authorization, createFetch } from "./auth"
 
 interface CreateBlobAPIResponse {
 	data: BlobResponseData
@@ -38,13 +39,10 @@ export interface MemoResponseData {
 }
 
 async function writeResource(
-	openAPI: string,
+	auth: Authorization,
 	attachment: Attachment
 ): Promise<CreateBlobAPIResponse | string> {
-	const url = new URL(openAPI)
-	const openId = url.searchParams.get("openId")
-	const baseURL = url.origin
-	const createBlobURL = baseURL + "/api/resource/blob" + "?openId=" + openId
+	const $fetch = createFetch(auth)
 
 	const postData = new FormData()
 	if (!attachment.content) {
@@ -64,33 +62,27 @@ async function writeResource(
 	)
 
 	try {
-		const response = await fetch(createBlobURL, {
+		const response = await $fetch("/api/resource/blob", {
 			body: postData,
 			method: "POST",
 		})
 		return (await response.json()) as Promise<CreateBlobAPIResponse>
 	} catch (error) {
-		;[
-			"Failed to create resource",
-			createBlobURL,
-			attachment.filename,
-			error,
-		].forEach((msg) => console.error(msg))
+		;["Failed to create resource", attachment.filename, error].forEach((msg) =>
+			console.error(msg)
+		)
 		return `Failed to create resource ${attachment.filename}`
 	}
 }
 
 export async function writeMemosWithResources(
-	openAPI: string,
+	auth: Authorization,
 	notesWithAttachments: NotesWithAttachments
 ): Promise<void | string> {
-	const url = new URL(openAPI)
-	const openId = url.searchParams.get("openId")
-	const origin = url.origin
-
+	const $fetch = createFetch(auth)
 	const createdResourceList: BlobResponseData[] = []
 	const createdResourceJobs = notesWithAttachments.files.map(
-		(attachment) => () => writeResource(openAPI, attachment)
+		(attachment) => () => writeResource(auth, attachment)
 	)
 	while (createdResourceJobs.length) {
 		// limit 20 requests per group
@@ -125,7 +117,7 @@ export async function writeMemosWithResources(
 		}
 
 		try {
-			const res = await fetch(openAPI, {
+			const res = await $fetch("/api/v1/memo", {
 				headers: {
 					"content-type": "application/json",
 				},
@@ -137,7 +129,7 @@ export async function writeMemosWithResources(
 				if (note.metadata.createdAt) {
 					const memoId = res.data.id
 
-					await fetch(`${origin}/api/memo/${memoId}?openId=${openId}`, {
+					await $fetch(`/api/memo/${memoId}`, {
 						headers: {
 							"content-type": "application/json",
 						},

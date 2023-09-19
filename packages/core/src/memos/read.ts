@@ -1,5 +1,5 @@
-import fetch from "node-fetch"
 import { Attachment, Note, NotesWithAttachments } from "../common/types"
+import { Authorization, createFetch } from "./auth"
 
 type MemoAPIResponse =
 	| Memo[]
@@ -35,45 +35,36 @@ type Resource = {
 	linkedMemoAmount: number
 }
 
-function getResourceUrl(resource: Resource, url: URL) {
-	return (
-		resource.externalLink ||
-		url.origin +
-			"/o/r/" +
-			resource.id +
-			"/" +
-			resource.publicId +
-			"/" +
-			resource.filename
-	)
+function getResourceUrl(resource: Resource, baseUrl: string) {
+	return resource.externalLink || baseUrl + "/o/r/" + resource.id
 }
 
 function isResourceAImage(resource: Resource) {
 	return resource.type.startsWith("image")
 }
 
-function resourceLinkInMarkdown(resource: Resource, url: URL, local = true) {
+function resourceLinkInMarkdown(
+	resource: Resource,
+	baseUrl: string,
+	local = true
+) {
 	return local
 		? `${isResourceAImage(resource) ? "!" : ""}[${
 				resource.filename
 		  }](../resources/${resource.filename})`
 		: `${isResourceAImage(resource) ? "!" : ""}[${
 				resource.filename
-		  }](${getResourceUrl(resource, url)})`
+		  }](${getResourceUrl(resource, baseUrl)})`
 }
 
 export async function readMemosFromOpenAPI(
-	openAPI: string,
+	auth: Authorization,
 	withFrontMatter = false,
 	withOutResources = false
 ): Promise<NotesWithAttachments> {
-	const url = new URL(openAPI)
-	const openId = url.searchParams.get("openId")
-	if (!openId) {
-		throw new Error("openId is not found")
-	}
+	const $fetch = createFetch(auth)
 
-	const response = (await fetch(openAPI).then((res) =>
+	const response = (await $fetch("/api/v1/memo").then((res) =>
 		res.json()
 	)) as MemoAPIResponse
 	const memos = Array.isArray(response) ? response : response.data
@@ -86,8 +77,8 @@ export async function readMemosFromOpenAPI(
 
 	const files: Attachment[] = await Promise.all(
 		filetedResources.map(async (resource) => {
-			const memoResourceUrl = `${getResourceUrl(resource, url)}${
-				resource.externalLink ? "" : `?openId=${openId}`
+			const memoResourceUrl = `${getResourceUrl(resource, auth.baseUrl)}${
+				!resource.externalLink && auth.openId ? `?openId=${auth.openId}` : ""
 			}`
 
 			return {
@@ -104,12 +95,12 @@ export async function readMemosFromOpenAPI(
 		attachments: memo.resourceList.map((resource) =>
 			withOutResources
 				? {
-						url: getResourceUrl(resource, url),
-						markdown: resourceLinkInMarkdown(resource, url, false),
+						url: getResourceUrl(resource, auth.baseUrl),
+						markdown: resourceLinkInMarkdown(resource, auth.baseUrl, false),
 				  }
 				: {
 						url: resource.filename,
-						markdown: resourceLinkInMarkdown(resource, url),
+						markdown: resourceLinkInMarkdown(resource, auth.baseUrl),
 				  }
 		),
 		metadata: {
