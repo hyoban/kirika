@@ -18,19 +18,28 @@ function mergeInit(init?: RequestInit, auth?: Authorization) {
 	return finalInit
 }
 
-export function createFetch(auth: Authorization) {
-	if (!auth.baseUrl) {
-		throw new Error("auth.baseUrl is required")
+export function createFetch(
+	auth?: Authorization,
+	option?: {
+		overridePath?: boolean
 	}
-	if (!auth.accessToken && !auth.openId) {
-		throw new Error("auth.accessToken or auth.openID is required")
+) {
+	if (!auth) {
+		return fetch
 	}
+
+	const { overridePath } = option || {
+		overridePath: false,
+	}
+
 	return async function fetchWithAuth(
 		path: string,
 		init?: RequestInit | undefined
 	) {
 		return fetch(
-			auth.baseUrl + path + (auth.openId ? `?openId=${auth.openId}` : ""),
+			overridePath
+				? path
+				: auth.baseUrl + path + (auth.openId ? `?openId=${auth.openId}` : ""),
 			mergeInit(init, auth)
 		)
 	}

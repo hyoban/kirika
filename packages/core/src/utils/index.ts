@@ -1,5 +1,5 @@
-import fetch from "node-fetch"
 import { Attachment, Note } from "../common/types"
+import { Authorization, createFetch } from "../memos/auth"
 
 export function getNoteContent(note: Note): string {
 	return (
@@ -18,12 +18,16 @@ export function getNoteContent(note: Note): string {
 	)
 }
 
-export async function getAttachmentContent(resource: Attachment) {
+export async function getAttachmentContent(
+	resource: Attachment,
+	auth?: Authorization
+) {
 	if (resource.content) {
 		return resource.content
 	}
 	if (resource.url) {
-		const response = await fetch(resource.url)
+		const $fetch = createFetch(auth, { overridePath: true })
+		const response = await $fetch(resource.url)
 		return await response.arrayBuffer()
 	}
 	return null
