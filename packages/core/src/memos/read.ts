@@ -36,7 +36,7 @@ type Resource = {
 }
 
 function getResourceUrl(resource: Resource, baseUrl: string) {
-	return resource.externalLink || baseUrl + "/o/r/" + resource.id
+	return resource.externalLink || baseUrl + "/o/r/" + resource.name
 }
 
 function isResourceAImage(resource: Resource) {
